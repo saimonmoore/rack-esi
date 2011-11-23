@@ -10,7 +10,7 @@ class Rack::ESI
   def initialize(app, options = {})
     @app        = app
 
-    @parser     = options.fetch :parser, Nokogiri::XML::Document
+    @parser     = options.fetch :parser, Nokogiri::HTML::Document
     @serializer = options.fetch :serializer, :to_xhtml
     @skip       = options[:skip]
     @poolsize   = options.fetch :poolsize, 4

@@ -3,7 +3,7 @@ class Rack::ESI
 
     class Linear < self
       def process_document(d)
-        d.xpath('//e:*', 'e' => NAMESPACE).each { |n| process_node n }
+        d.xpath('//include').each { |n| process_node n }
       end
     end
     autoload :Threaded, File.expand_path('../threaded', __FILE__)
@@ -44,10 +44,10 @@ class Rack::ESI
       raise NotImplementedError
     end
     def process(body)
-      document = esi.parser.parse read(body)
+      document = esi.parser.parse read(body), nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_HTML
       process_document document
       [
-        document.send( esi.serializer )
+        document.children.map {|c| c.text}.join('')
       ]
     end
 

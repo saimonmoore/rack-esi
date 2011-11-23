@@ -33,7 +33,7 @@ class Rack::ESI
 
   class Processor::Threaded < Processor
     def process_document(document)
-      nodes = document.xpath '//e:*', 'e' => NAMESPACE
+      nodes = document.xpath '//include'
 
       countdown, main = nodes.length, Thread.current
       nodes.each do |node|
