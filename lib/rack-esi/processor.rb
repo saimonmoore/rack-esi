@@ -33,11 +33,13 @@ class Rack::ESI
 
         if status == 200
           node.replace read(body)
+          Thread.current[:doc_changed] = true
         elsif node['onerror'] != 'continue'
           raise Error
         end
       else
         node.remove
+        Thread.current[:doc_changed] = false
       end
     end
     def process_document(document)
@@ -47,7 +49,9 @@ class Rack::ESI
       document = esi.parser.parse read(body), nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_HTML
       process_document document
       [
-        document.children.map {|c| c.text}.join('')
+        Thread.current[:doc_changed] ?
+        document.children.map {|c| c.text}.join('') :
+        document.send( esi.serializer )
       ]
     end
 
