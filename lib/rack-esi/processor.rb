@@ -1,5 +1,6 @@
 class Rack::ESI
   class Processor < Struct.new(:esi, :env)
+    $doc_changed = false
 
     class Linear < self
       def process_document(d)
@@ -33,7 +34,7 @@ class Rack::ESI
 
         if status == 200
           node.replace read(body)
-          Thread.current[:doc_changed] = true
+          $doc_changed = true
         elsif node['onerror'] != 'continue'
           raise Error
         end
@@ -48,7 +49,7 @@ class Rack::ESI
       document = esi.parser.parse read(body), nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_HTML
       process_document document
       [
-        Thread.current.key?(:doc_changed) ?
+        $doc_changed ?
         document.children.map {|c| c.text}.join('') :
         document.send( esi.serializer )
       ]
