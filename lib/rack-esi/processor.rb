@@ -45,15 +45,17 @@ class Rack::ESI
         node.remove
       end
     end
+
     def process_document(document)
       raise NotImplementedError
     end
+
     def process(body)
-      document = esi.parser.parse read(body), nil, nil, (Nokogiri::XML::ParseOptions::DEFAULT_HTML | Nokogiri::XML::ParseOptions::NOCDATA)
-      process_document document
+      original_body = read(body)
+      document = esi.parser.parse(original_body, nil, nil, (Nokogiri::XML::ParseOptions::DEFAULT_HTML))
+      process_document(document)
       content = $doc_changed ?
-        document.children.map {|c| c.text}.join('') :
-        document.send( esi.serializer )
+        document.children.map {|c| c.text}.join('') : original_body
 
       $doc_changed = false
 
