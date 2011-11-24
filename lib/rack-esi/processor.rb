@@ -1,3 +1,5 @@
+require 'uri'
+
 class Rack::ESI
   class Processor < Struct.new(:esi, :env)
     $doc_changed = false
@@ -19,7 +21,8 @@ class Rack::ESI
 
     def include(path)
       # RADAR patron here?
-      esi.call env.merge('PATH_INFO' => path, 'REQUEST_URI' => path)
+      uri = URI(path)
+      esi.call env.merge('PATH_INFO' => uri.path, 'REQUEST_URI' => uri.path, 'QUERY_STRING' => uri.query)
     rescue => e
       return 500, {}, []
     end
