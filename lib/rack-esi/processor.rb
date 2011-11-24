@@ -48,11 +48,13 @@ class Rack::ESI
     def process(body)
       document = esi.parser.parse read(body), nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_HTML
       process_document document
-      [
-        $doc_changed ?
+      content = $doc_changed ?
         document.children.map {|c| c.text}.join('') :
         document.send( esi.serializer )
-      ]
+
+      $doc_changed = false
+
+      [content]
     end
 
   end
