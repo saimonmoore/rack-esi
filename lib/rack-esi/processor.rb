@@ -49,7 +49,7 @@ class Rack::ESI
       raise NotImplementedError
     end
     def process(body)
-      document = esi.parser.parse read(body), nil, nil, Nokogiri::XML::ParseOptions::DEFAULT_HTML
+      document = esi.parser.parse read(body), nil, nil, (Nokogiri::XML::ParseOptions::DEFAULT_HTML | Nokogiri::XML::ParseOptions::NOCDATA)
       process_document document
       content = $doc_changed ?
         document.children.map {|c| c.text}.join('') :
